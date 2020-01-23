@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Digi Dairy</string>
+    <string name="login">Login</string>
+    <string name="shift">Shift</string>
+    <string name="name">Name</string>
+    <string name="title_activity_sampleprint">sampleprint</string>
+</resources>
