@@ -386,9 +386,8 @@ public class MainActivity extends AppCompatActivity {
 //                        mySocket = mbDevice.createInsecureRfcommSocketToServiceRecord(uuid);
 //                        mySocket.connect();
 
-                    //dialog.dismiss();
-                    dialog.cancel();
-
+                    dialog.dismiss();
+                    //dialog.cancel();
                     //Toast.makeText(MainActivity.this,details.get(strNames[item].toString()),Toast.LENGTH_LONG).show();
                 }
 
@@ -923,5 +922,5 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         unregisterReceiver(mReceiver);
     }
-
+    //nnbnb
 }
