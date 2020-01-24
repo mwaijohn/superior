@@ -20,7 +20,6 @@ import android.print.PrintDocumentInfo;
 import android.print.PrintManager;
 
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.util.Log;
@@ -609,6 +608,7 @@ public class MainActivity extends BaseActivity {
 
     //confirm supplier name
     public void confirmName(){
+        startActivity(new Intent(this,Search.class));
         String url = "http://dairy.digerp.com/milkfarming/farmers/confirm_name.php?id="+supp_id.getText().toString();
         StringRequest getRequest = new StringRequest(Request.Method.GET,url,new Response.Listener<String>(){
             @Override
