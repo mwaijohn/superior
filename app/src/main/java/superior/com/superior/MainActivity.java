@@ -57,7 +57,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.io.PushbackInputStream;
 import java.text.DateFormat;
@@ -71,7 +70,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     BluetoothAdapter bluetoothAdapter;
     BluetoothManager bluetoothManager;
@@ -89,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
     Spinner spinner,shift;
     RequestQueue mQueue;
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -385,6 +384,7 @@ public class MainActivity extends AppCompatActivity {
                     //myDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(mbDevice.getAddress());
 //                        mySocket = mbDevice.createInsecureRfcommSocketToServiceRecord(uuid);
 //                        mySocket.connect();
+                    unregisterReceiver(mReceiver);
 
                     dialog.dismiss();
                     //dialog.cancel();
@@ -922,5 +922,7 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         unregisterReceiver(mReceiver);
     }
-    //nnbnb
+    //remember the scale
+    //download list of suppliers
+    //enable real time searching
 }

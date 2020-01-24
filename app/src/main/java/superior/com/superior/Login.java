@@ -101,7 +101,7 @@ public class Login extends AppCompatActivity {
                                         editor.putString("loc_code",loc);
                                         editor.putString("username",username);
                                         editor.putString("grader_name",g_name);
-                                        editor.commit();
+                                        editor.apply();
 
                                         Intent intent = new Intent(Login.this, MainActivity.class);
                                         password.setText("");
