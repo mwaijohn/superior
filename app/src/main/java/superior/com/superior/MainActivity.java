@@ -388,6 +388,7 @@ public class MainActivity extends BaseActivity {
                     dialog.dismiss();
                     //dialog.cancel();
                     //Toast.makeText(MainActivity.this,details.get(strNames[item].toString()),Toast.LENGTH_LONG).show();
+
                 }
 
             });
