@@ -373,7 +373,6 @@ public class MainActivity extends BaseActivity {
 
             final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
             dialogBuilder.setTitle("Select your device");
-            final AlertDialog alertDialogObject = dialogBuilder.create();
 
             //array convertion
             Object[] objNames = names.toArray();
@@ -389,29 +388,18 @@ public class MainActivity extends BaseActivity {
                     //myDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(mbDevice.getAddress());
 //                        mySocket = mbDevice.createInsecureRfcommSocketToServiceRecord(uuid);
 //                        mySocket.connect();
-                    unregisterReceiver(mReceiver);
-                    bluetoothAdapter.cancelDiscovery();
 
-                    dialog.dismiss();
+                    //dialog.dismiss();
                     dialog.cancel();
 
-                   // alertDialogObject.dismiss();
-                   // alertDialogObject.cancel();
                     //Toast.makeText(MainActivity.this,details.get(strNames[item].toString()),Toast.LENGTH_LONG).show();
                 }
-
             });
 
             //Create alert dialog object via builder
-
+            AlertDialog alertDialogObject = dialogBuilder.create();
             //Show the dialog
             alertDialogObject.show();
-
-            if(mySocket == null){
-                //alertDialogObject.show();
-            }else {
-
-            }
 
 //            ArrayAdapter adapter = new ArrayAdapter<String>(getApplicationContext(),
 //                    android.R.layout.simple_list_item_1, names);
