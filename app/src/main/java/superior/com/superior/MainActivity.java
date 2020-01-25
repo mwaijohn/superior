@@ -69,6 +69,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import superior.com.superior.database.DatabaseHandler;
+
 public class MainActivity extends BaseActivity {
 
     BluetoothAdapter bluetoothAdapter;
@@ -238,15 +240,15 @@ public class MainActivity extends BaseActivity {
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(supp_id.getText().toString().equals("") && confirmname.getText().toString().equals("")){
-
-                    supp_id.setError("Enter farmer number");
-
-                }else{
-                    confirmName();
+                confirmName();
+//                if(supp_id.getText().toString().equals("") && confirmname.getText().toString().equals("")){
+//
+//                    supp_id.setError("Enter farmer number");
+//
+//                }else{
+                    //confirmName();
                     //Toast.makeText(MainActivity.this,"Data saved successfuly",Toast.LENGTH_LONG).show();
                 }
-            }
         });
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -344,6 +346,9 @@ public class MainActivity extends BaseActivity {
                 }
             }
         });
+
+        //DatabaseHandler db = new DatabaseHandler(this);
+        //db.addContact("hhgh");
     }
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -368,6 +373,7 @@ public class MainActivity extends BaseActivity {
 
             final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
             dialogBuilder.setTitle("Select your device");
+            final AlertDialog alertDialogObject = dialogBuilder.create();
 
             //array convertion
             Object[] objNames = names.toArray();
@@ -384,18 +390,28 @@ public class MainActivity extends BaseActivity {
 //                        mySocket = mbDevice.createInsecureRfcommSocketToServiceRecord(uuid);
 //                        mySocket.connect();
                     unregisterReceiver(mReceiver);
+                    bluetoothAdapter.cancelDiscovery();
 
                     dialog.dismiss();
-                    //dialog.cancel();
+                    dialog.cancel();
+
+                   // alertDialogObject.dismiss();
+                   // alertDialogObject.cancel();
                     //Toast.makeText(MainActivity.this,details.get(strNames[item].toString()),Toast.LENGTH_LONG).show();
                 }
 
             });
 
             //Create alert dialog object via builder
-            AlertDialog alertDialogObject = dialogBuilder.create();
+
             //Show the dialog
             alertDialogObject.show();
+
+            if(mySocket == null){
+                //alertDialogObject.show();
+            }else {
+
+            }
 
 //            ArrayAdapter adapter = new ArrayAdapter<String>(getApplicationContext(),
 //                    android.R.layout.simple_list_item_1, names);
@@ -407,7 +423,7 @@ public class MainActivity extends BaseActivity {
 
 
     public void GetData(){
-        String[] data = {} ;
+        //String[] data = {} ;
         int index =0;
         bluetoothAdapter.cancelDiscovery();
         //mySocket = myDevice.createInsecureRfcommSocketToServiceRecord(uuid);
@@ -606,53 +622,56 @@ public class MainActivity extends BaseActivity {
         mQueue.add(postRequest);
     }
 
+
     //confirm supplier name
     public void confirmName(){
-        startActivity(new Intent(this,Search.class));
-        String url = "http://dairy.digerp.com/milkfarming/farmers/confirm_name.php?id="+supp_id.getText().toString();
-        StringRequest getRequest = new StringRequest(Request.Method.GET,url,new Response.Listener<String>(){
-            @Override
-            public void onResponse(String response) {
+        startActivity(new Intent(MainActivity.this,FilterFarmerActivity.class));
 
-                try {
-                    JSONObject jsonObj = new JSONObject(response.toString());
-                    JSONArray jsonArray = jsonObj.getJSONArray("details");
-
-                    JSONObject json = jsonArray.getJSONObject(0);
-                    String supp_name = json.getString("supp_name");
-                    String supp_id = json.getString("supplier_id");
-                    String contact = json.getString("contact");
-
-                    if(supp_name.equals("null")){
-                        confirmname.setError("Ivalid member number");
-                    }
-
-                    //STORE supplier id and contact
-                    SharedPreferences sharedPreferences = getSharedPreferences("APP_DETAILS", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("supplier_id",supp_id);
-                    editor.putString("farmer_contact",contact);
-                    editor.putString("supp_name",supp_name);
-
-                    editor.commit();
-
-
-
-                    confirmname.setText(supp_name);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    supp_id.setText("");
-                    supp_id.setError("Farmer does not exist");
-                    confirmname.setText("");
-                }
-                Log.i("confirm",response);
-            }
-        },new Response.ErrorListener(){
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-       });//{
+//        String url = "http://dairy.digerp.com/milkfarming/farmers/confirm_name.php?id="+supp_id.getText().toString();
+//
+//        StringRequest getRequest = new StringRequest(Request.Method.GET,url,new Response.Listener<String>(){
+//            @Override
+//            public void onResponse(String response) {
+//
+//                try {
+//                    JSONObject jsonObj = new JSONObject(response.toString());
+//                    JSONArray jsonArray = jsonObj.getJSONArray("details");
+//
+//                    JSONObject json = jsonArray.getJSONObject(0);
+//                    String supp_name = json.getString("supp_name");
+//                    String supp_id = json.getString("supplier_id");
+//                    String contact = json.getString("contact");
+//
+//                    if(supp_name.equals("null")){
+//                        confirmname.setError("Ivalid member number");
+//                    }
+//
+//                    //STORE supplier id and contact
+//                    SharedPreferences sharedPreferences = getSharedPreferences("APP_DETAILS", Context.MODE_PRIVATE);
+//                    SharedPreferences.Editor editor = sharedPreferences.edit();
+//                    editor.putString("supplier_id",supp_id);
+//                    editor.putString("farmer_contact",contact);
+//                    editor.putString("supp_name",supp_name);
+//
+//                    editor.commit();
+//
+//
+//
+//                    confirmname.setText(supp_name);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                    supp_id.setText("");
+//                    supp_id.setError("Farmer does not exist");
+//                    confirmname.setText("");
+//                }
+//                Log.i("confirm",response);
+//            }
+//        },new Response.ErrorListener(){
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//
+//            }
+//       });//{
 //            @Override
 //            protected Map<String, String> getParams() throws AuthFailureError {
 //                Map<String, String>  params = new HashMap<String, String>();
@@ -661,7 +680,7 @@ public class MainActivity extends BaseActivity {
 //            }
         //};
 
-        mQueue.add(getRequest);
+       // mQueue.add(getRequest);
     }
 
     public void saveData(){
@@ -916,7 +935,6 @@ public class MainActivity extends BaseActivity {
             }
         }}
 
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -925,4 +943,23 @@ public class MainActivity extends BaseActivity {
     //remember the scale
     //download list of suppliers
     //enable real time searching
+
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        //unregisterReceiver(mReceiver);
+        //bluetoothAdapter.cancelDiscovery();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences details = getSharedPreferences("APP_DETAILS",Context.MODE_PRIVATE);
+
+        String supp_name = details.getString("supp_name",null);
+        confirmname.setText(supp_name);
+
+        confirmname.setText(supp_name);
+    }
 }

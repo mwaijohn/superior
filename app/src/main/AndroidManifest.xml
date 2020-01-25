@@ -19,22 +19,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/NoActionBar">
-        <activity android:name=".Search"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
-            <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
+
+        <activity android:name=".FilterFarmerActivity">
+
         </activity>
-        <activity android:name=".Login"></activity>
+        <activity android:name=".Login" />
 
         <service
             android:name=".UpdateDB"
             android:enabled="true"
             android:exported="true" />
-
         <receiver
             android:name=".backupReceiver"
             android:enabled="true"
@@ -46,7 +40,7 @@
         </receiver>
 
         <activity android:name=".Print" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
