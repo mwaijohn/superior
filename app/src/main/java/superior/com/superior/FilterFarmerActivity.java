@@ -1,8 +1,6 @@
 package superior.com.superior;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,7 +8,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -24,25 +21,23 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 import superior.com.superior.adapters.ListViewAdapter;
-import superior.com.superior.models.AnimalNames;
+import superior.com.superior.database.DatabaseHandler;
+import superior.com.superior.database.Suppliers;
 import superior.com.superior.models.FarmerNames;
+import superior.com.superior.utils.Utils;
 
 public class FilterFarmerActivity  extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
-    // Declare Variables
     ListView list;
     ListViewAdapter adapter;
     SearchView editsearch;
-    String[] animalNameList;
-    ArrayList<AnimalNames> arraylist = new ArrayList<AnimalNames>();
-    ArrayList<FarmerNames> farmerNameslist = new ArrayList<>();
-    //HashMap<String,String> suppliers;
+    ArrayList<FarmerNames> arraylist = new ArrayList<FarmerNames>();
     RequestQueue mQueue;
     ArrayList<String> suppliers;
-    //String id,name,contact;
+    boolean hasInternet;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,14 +47,6 @@ public class FilterFarmerActivity  extends AppCompatActivity implements SearchVi
 
         mQueue = Volley.newRequestQueue(this);
 
-
-        // Generate sample data
-
-//        animalNameList = new String[]{"Lion", "Tiger", "Dog",
-//                "Cat", "Tortoise", "Rat", "Elephant", "Fox",
-//                "Cow","Donkey","Monkey"};
-
-        // Locate the ListView in listview_main.xml
         list = (ListView) findViewById(R.id.listview);
 
         getSuppliers();
@@ -70,19 +57,21 @@ public class FilterFarmerActivity  extends AppCompatActivity implements SearchVi
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> av, View view, int i, long l) {
-                AnimalNames jhj = (AnimalNames) list.getItemAtPosition(i);
+                FarmerNames jhj = (FarmerNames) list.getItemAtPosition(i);
                 //list.setVisibility(View.INVISIBLE);
 
                 //STORE supplier id and contact
-                SharedPreferences sharedPreferences = getSharedPreferences("APP_DETAILS", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("supplier_id",jhj.getSupplier_id());
-                editor.putString("farmer_contact",jhj.getContact());
-                editor.putString("supp_name",jhj.getSupplier_name());
-                editor.commit();
+               // SharedPreferences sharedPreferences = getSharedPreferences("APP_DETAILS", Context.MODE_PRIVATE);
+                //SharedPreferences.Editor editor = sharedPreferences.edit();
+                //editor.putString("supplier_id",jhj.getSupplier_id());
+               // editor.putString("farmer_contact",jhj.getContact());
+//                editor.putString("supp_name",jhj.getSupplier_name());
+               // editor.commit();
+                //editor.apply();
 
-                startActivity(new Intent(FilterFarmerActivity.this,MainActivity.class));
-                Toast.makeText(FilterFarmerActivity.this, jhj.getSupplier_name(), Toast.LENGTH_SHORT).show();
+               // startActivity(new Intent(FilterFarmerActivity.this,MainActivity.class));
+                finish();
+                //Toast.makeText(FilterFarmerActivity.this, jhj.getSupplier_name(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -108,7 +97,7 @@ public class FilterFarmerActivity  extends AppCompatActivity implements SearchVi
         list.setAdapter(adapter);
     }
 
-    //get routes
+    //get suppliers
     public void getSuppliers(){
         String url = "http://dairy.digerp.com/milkfarming/farmers/suppliers.php";
         StringRequest postRequest = new StringRequest(Request.Method.GET, url,
@@ -130,18 +119,9 @@ public class FilterFarmerActivity  extends AppCompatActivity implements SearchVi
                                 String contact = json.getString("contact");
                                 suppliers.add(name);
 
-                                AnimalNames animalNames = new AnimalNames(name,id,contact);
-                                arraylist.add(animalNames);
+                                FarmerNames supplierNames = new FarmerNames(name,contact,id);
+                                arraylist.add(supplierNames);
                             }
-
-//                            Object[] objArr = suppliers.toArray();
-//                            String[] str = Arrays.copyOf(objArr, objArr.length,String[].class);
-////
-//                            for (int i = 0; i < str.length; i++) {
-//                                AnimalNames animalNames = new AnimalNames(str[i]);
-//                                // Binds all strings into an array
-//                                arraylist.add(animalNames);
-//                            }
 
                             // Pass results to ListViewAdapter Class
                             adapter = new ListViewAdapter(FilterFarmerActivity.this, arraylist);
@@ -149,8 +129,11 @@ public class FilterFarmerActivity  extends AppCompatActivity implements SearchVi
                             // Binds the Adapter to the ListView
                             list.setAdapter(adapter);
 
+                            new Internet().execute();
+
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            new Internet().execute();
                         }
                         Log.d("Response2", String.valueOf(suppliers.size()));
                         Log.d("Response2", response);
@@ -163,8 +146,76 @@ public class FilterFarmerActivity  extends AppCompatActivity implements SearchVi
                         // error
                         //progressDialog.dismiss();
                         Log.d("Error.Response","error");
+                        new Internet().execute();
                     }
                 });
         mQueue.add(postRequest);
+    }
+
+
+    public class Internet extends AsyncTask<Void,Void,Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            hasInternet = Utils.hasInternetAccess(getApplicationContext());
+            if(hasInternet){
+                DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+
+                for (FarmerNames farmerNames : arraylist) {
+                    db.addSupplier(new Suppliers(farmerNames.getSupplier_name(),farmerNames.getContact(),farmerNames.getSupplier_id()));
+                    Log.d("add_suppliers","adding suppliers");
+                }
+
+            }else{
+
+
+                Log.d("conn_ava","connection not available");
+
+                DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+                List<Suppliers> suppliers = db.getAllSuppliers();
+                for (Suppliers suppliers1: suppliers){
+                    Log.d("suppliers",suppliers1.getSupp_name());
+                    arraylist.add(new FarmerNames(suppliers1.getSupp_name(),suppliers1.getContact(),suppliers1.getSupplier_id()));
+                }
+
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            if(!hasInternet){
+                // Pass results to ListViewAdapter Class
+                adapter = new ListViewAdapter(FilterFarmerActivity.this, arraylist);
+
+                // Binds the Adapter to the ListView
+                list.setAdapter(adapter);
+            }
+
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected void onCancelled(Void aVoid) {
+            super.onCancelled(aVoid);
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 }

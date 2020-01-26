@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.CancellationSignal;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
@@ -66,16 +67,22 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import superior.com.superior.database.DatabaseHandler;
+import superior.com.superior.database.Logins;
+import superior.com.superior.database.Routes;
+import superior.com.superior.utils.Utils;
 
 public class MainActivity extends BaseActivity {
 
+    public boolean hasInternet;
+
     BluetoothAdapter bluetoothAdapter;
     BluetoothManager bluetoothManager;
-    BluetoothSocket mySocket;
+    BluetoothSocket mySocket = null;
     BluetoothDevice myDevice = null;
 
     TextView name,confirmname;
@@ -84,7 +91,7 @@ public class MainActivity extends BaseActivity {
     byte[] buffer = new byte[1024];
     UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
     int bytes;
-    ArrayList<String> myroutes;
+    ArrayList<String> myroutes = new ArrayList<>();
 
     Spinner spinner,shift;
     RequestQueue mQueue;
@@ -347,9 +354,18 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-        //DatabaseHandler db = new DatabaseHandler(this);
-        //db.addContact("hhgh");
+       // new Internet().execute();
+
+//        if(hasInternet){
+//            Log.d("conn_ava","connection available");
+//        }else {
+//            Log.d("conn_ava","connection not available");
+//        }
+
+        DatabaseHandler db = new DatabaseHandler(this);
+        //db.addContact();
     }
+
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
@@ -367,7 +383,6 @@ public class MainActivity extends BaseActivity {
                 Log.i("names",device.getName());
                 details.put(device.getName(),device.getAddress());
 
-
                 //Toast.makeText(MainActivity.this,deviceHardwareAddress,Toast.LENGTH_LONG).show();
             }
 
@@ -382,6 +397,7 @@ public class MainActivity extends BaseActivity {
                     //String selectedText = names[item].toString();  //Selected item in listview
                     bluetoothAdapter.cancelDiscovery();
 
+
                     myDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(details.get(strNames[item].toString()));
                     Log.d("deviceclicked",myDevice.getAddress().toString());
                     myDevice.createBond();
@@ -389,18 +405,24 @@ public class MainActivity extends BaseActivity {
 //                        mySocket = mbDevice.createInsecureRfcommSocketToServiceRecord(uuid);
 //                        mySocket.connect();
 
-                    //dialog.dismiss();
-                    dialog.cancel();
+                    unregisterReceiver(mReceiver);
+
+                    dialog.dismiss();
+                    //dialog.cancel();
 
                     //Toast.makeText(MainActivity.this,details.get(strNames[item].toString()),Toast.LENGTH_LONG).show();
 
                 }
             });
 
+            if(mySocket == null){
+                AlertDialog alertDialogObject = dialogBuilder.create();
+                //Show the dialog
+                alertDialogObject.show();
+            }
+
             //Create alert dialog object via builder
-            AlertDialog alertDialogObject = dialogBuilder.create();
-            //Show the dialog
-            alertDialogObject.show();
+
 
 //            ArrayAdapter adapter = new ArrayAdapter<String>(getApplicationContext(),
 //                    android.R.layout.simple_list_item_1, names);
@@ -484,7 +506,7 @@ public class MainActivity extends BaseActivity {
                         //storeReadings(readMessage);
                         mmInStream.close();
                         mmInputStream.close();
-                        mySocket.close();
+                       // mySocket.close();
 
 //                        //STORE supplier quantity supplied
                         SharedPreferences sharedPreferences = getSharedPreferences("APP_DETAILS", Context.MODE_PRIVATE);
@@ -564,6 +586,64 @@ public class MainActivity extends BaseActivity {
 //        }
 //    }
 
+
+    //store farmers details offline
+    public void storeLogins(){
+        String url = "http://dairy.digerp.com/milkfarming/farmers/logins.php";
+        final ArrayList<Logins> logins = new ArrayList<>();
+
+        StringRequest postRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>()
+                {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+
+                            JSONObject jsonObj = new JSONObject(response.toString());
+                            JSONArray jsonArray = jsonObj.getJSONArray("details");
+
+                            for(int i=0;i<jsonArray.length();i++){
+                                JSONObject json = jsonArray.getJSONObject(i);
+
+                                String email = json.getString("email");
+                                String loc_code = json.getString("loc_code");
+                                String location = json.getString("location_name");
+                                String username = json.getString("username");
+                                String password = json.getString("password");
+
+                                Logins lg = new Logins(username,password,email,location,loc_code);
+                                logins.add(lg);
+                                //Log.i("routes",route);
+                            }
+
+                            DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+                            for (Logins login : logins){
+                                db.addLogins(login);
+                                Log.d("logins",login.getEmail());
+                            }
+
+                            new Internet().execute();
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // error
+                        //progressDialog.dismiss();
+                        Log.d("Error.Response","error");
+                       // new Internet().execute();
+                    }
+                });
+        mQueue.add(postRequest);
+
+    }
+
     //get routes
     public void getRoutes(){
         String url = "http://dairy.digerp.com/milkfarming/routes/routes.php";
@@ -592,6 +672,7 @@ public class MainActivity extends BaseActivity {
                             spinner.setAdapter(spinnerAdapter);
                             Log.i("routes",String.valueOf(jsonArray.length()));
                             Log.i("nice",String.valueOf(myroutes.size()));
+                            new Internet().execute();
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -606,6 +687,7 @@ public class MainActivity extends BaseActivity {
                         // error
                         //progressDialog.dismiss();
                         Log.d("Error.Response","error");
+                        new Internet().execute();
                     }
                 });
         mQueue.add(postRequest);
@@ -614,7 +696,12 @@ public class MainActivity extends BaseActivity {
 
     //confirm supplier name
     public void confirmName(){
-        startActivity(new Intent(MainActivity.this,FilterFarmerActivity.class));
+        Intent intent = new Intent(MainActivity.this,FilterFarmerActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        //startActivityForResult(,1);
+        startActivityForResult(intent, 1);
+
+        //startActivity(intent);
 
 //        String url = "http://dairy.digerp.com/milkfarming/farmers/confirm_name.php?id="+supp_id.getText().toString();
 //
@@ -949,6 +1036,82 @@ public class MainActivity extends BaseActivity {
         String supp_name = details.getString("supp_name",null);
         confirmname.setText(supp_name);
 
+        String supp_id_ = details.getString("supplier_id",null);
+
         confirmname.setText(supp_name);
+        supp_id.setText(supp_id_);
+    }
+
+
+    public class Internet extends AsyncTask<Void,Void,Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            hasInternet = Utils.hasInternetAccess(getApplicationContext());
+            if(hasInternet){
+                DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+                for (String rt : myroutes){
+                    db.addRoutes(new Routes(rt));
+                    Log.d("rtts",rt);
+                }
+
+                storeLogins();
+            }else{
+
+
+                Log.d("conn_ava","connection not available");
+
+                DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+                List<Routes> routes = db.getAllRoutes();
+                Log.d("rtts_size",String.valueOf(routes.size()));
+                for (Routes rt: routes){
+                    myroutes.add(rt.getName());
+                }
+
+                Log.d("routes_s",String.valueOf(myroutes.size()));
+
+//                // Pass results to ListViewAdapter Class
+//                adapter = new ListViewAdapter(FilterFarmerActivity.this, arraylist);
+//
+//                // Binds the Adapter to the ListView
+//                list.setAdapter(adapter);
+
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            if(!hasInternet){
+                // Pass results to ListViewAdapter Class
+                //adapter = new ListViewAdapter(FilterFarmerActivity.this, arraylist);
+
+                // Binds the Adapter to the ListView
+                //list.setAdapter(adapter);
+
+                ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_spinner_item,
+                        myroutes.toArray(new String[myroutes.size()]));
+                spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinner.setAdapter(spinnerAdapter);
+            }
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected void onCancelled(Void aVoid) {
+            super.onCancelled(aVoid);
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+        }
     }
 }

@@ -1,27 +1,27 @@
 package superior.com.superior.models;
 
 public class FarmerNames {
-    String id;
-    String name;
 
-    public FarmerNames(String id, String name) {
-        this.id = id;
-        this.name = name;
+    private String supplier_name;
+    private String contact;
+    private String supplier_id;
+
+
+    public FarmerNames(String supplier_name, String contact, String supplier_id) {
+        this.supplier_name = supplier_name;
+        this.contact = contact;
+        this.supplier_id = supplier_id;
     }
 
-    public String getName() {
-        return name;
+    public String getSupplier_name() {
+        return supplier_name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getContact() {
+        return contact;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+    public String getSupplier_id() {
+        return supplier_id;
     }
 }

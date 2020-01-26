@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Locale;
 
 import superior.com.superior.R;
-import superior.com.superior.models.AnimalNames;
+import superior.com.superior.models.FarmerNames;
 
 public class ListViewAdapter extends BaseAdapter {
 
@@ -19,14 +19,14 @@ public class ListViewAdapter extends BaseAdapter {
 
     Context mContext;
     LayoutInflater inflater;
-    private List<AnimalNames> animalNamesList = null;
-    private ArrayList<AnimalNames> arraylist;
+    private List<FarmerNames> animalNamesList = null;
+    private ArrayList<FarmerNames> arraylist;
 
-    public ListViewAdapter(Context context, List<AnimalNames> animalNamesList) {
+    public ListViewAdapter(Context context, List<FarmerNames> animalNamesList) {
         mContext = context;
         this.animalNamesList = animalNamesList;
         inflater = LayoutInflater.from(mContext);
-        this.arraylist = new ArrayList<AnimalNames>();
+        this.arraylist = new ArrayList<FarmerNames>();
         this.arraylist.addAll(animalNamesList);
     }
 
@@ -40,7 +40,7 @@ public class ListViewAdapter extends BaseAdapter {
     }
 
     @Override
-    public AnimalNames getItem(int position) {
+    public FarmerNames getItem(int position) {
         return animalNamesList.get(position);
     }
 
@@ -65,6 +65,7 @@ public class ListViewAdapter extends BaseAdapter {
         return view;
     }
 
+
     // Filter Class
     public void filter(String charText) {
         charText = charText.toLowerCase(Locale.getDefault());
@@ -72,8 +73,9 @@ public class ListViewAdapter extends BaseAdapter {
         if (charText.length() == 0) {
             animalNamesList.addAll(arraylist);
         } else {
-            for (AnimalNames wp : arraylist) {
-                if (wp.getSupplier_name().toLowerCase(Locale.getDefault()).contains(charText)) {
+            for (FarmerNames wp : arraylist) {
+                if (wp.getSupplier_name().toLowerCase(Locale.getDefault()).contains(charText) ||
+                        wp.getSupplier_id().toLowerCase(Locale.getDefault()).contains(charText) ) {
                     animalNamesList.add(wp);
                 }
             }
