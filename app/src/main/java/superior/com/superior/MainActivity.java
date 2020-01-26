@@ -599,6 +599,7 @@ public class MainActivity extends BaseActivity {
                     public void onResponse(String response) {
                         try {
 
+                            Log.d("logins",response);
                             JSONObject jsonObj = new JSONObject(response.toString());
                             JSONArray jsonArray = jsonObj.getJSONArray("details");
 
@@ -613,8 +614,10 @@ public class MainActivity extends BaseActivity {
 
                                 Logins lg = new Logins(username,password,email,location,loc_code);
                                 logins.add(lg);
-                                //Log.i("routes",route);
+
                             }
+
+                            Log.d("logins",String.valueOf(logins.size()));
 
                             DatabaseHandler db = new DatabaseHandler(getApplicationContext());
                             for (Logins login : logins){
@@ -636,7 +639,7 @@ public class MainActivity extends BaseActivity {
                     public void onErrorResponse(VolleyError error) {
                         // error
                         //progressDialog.dismiss();
-                        Log.d("Error.Response","error");
+                        Log.d("Error.Response","error getting logins");
                        // new Internet().execute();
                     }
                 });
@@ -1015,11 +1018,16 @@ public class MainActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(mReceiver);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("APP_DETAILS", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("supplier_id",null);
+        editor.putString("supp_name",null);
+        editor.commit();
     }
     //remember the scale
     //download list of suppliers
     //enable real time searching
-
 
     @Override
     protected void onPostResume() {
@@ -1027,6 +1035,7 @@ public class MainActivity extends BaseActivity {
         //unregisterReceiver(mReceiver);
         //bluetoothAdapter.cancelDiscovery();
     }
+
 
     @Override
     protected void onResume() {
@@ -1040,6 +1049,8 @@ public class MainActivity extends BaseActivity {
 
         confirmname.setText(supp_name);
         supp_id.setText(supp_id_);
+
+        //Log.d("jhjh",supp_id_);
     }
 
 
@@ -1056,7 +1067,7 @@ public class MainActivity extends BaseActivity {
                     Log.d("rtts",rt);
                 }
 
-                storeLogins();
+
             }else{
 
 
@@ -1096,6 +1107,8 @@ public class MainActivity extends BaseActivity {
                         myroutes.toArray(new String[myroutes.size()]));
                 spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spinner.setAdapter(spinnerAdapter);
+            }else {
+                storeLogins();
             }
         }
 

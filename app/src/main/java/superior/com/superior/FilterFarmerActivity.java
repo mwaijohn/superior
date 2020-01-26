@@ -1,5 +1,7 @@
 package superior.com.superior;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -61,13 +63,13 @@ public class FilterFarmerActivity  extends AppCompatActivity implements SearchVi
                 //list.setVisibility(View.INVISIBLE);
 
                 //STORE supplier id and contact
-               // SharedPreferences sharedPreferences = getSharedPreferences("APP_DETAILS", Context.MODE_PRIVATE);
-                //SharedPreferences.Editor editor = sharedPreferences.edit();
-                //editor.putString("supplier_id",jhj.getSupplier_id());
-               // editor.putString("farmer_contact",jhj.getContact());
-//                editor.putString("supp_name",jhj.getSupplier_name());
-               // editor.commit();
-                //editor.apply();
+                SharedPreferences sharedPreferences = getSharedPreferences("APP_DETAILS", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("supplier_id",jhj.getSupplier_id());
+                editor.putString("farmer_contact",jhj.getContact());
+                editor.putString("supp_name",jhj.getSupplier_name());
+                editor.commit();
+                editor.apply();
 
                // startActivity(new Intent(FilterFarmerActivity.this,MainActivity.class));
                 finish();

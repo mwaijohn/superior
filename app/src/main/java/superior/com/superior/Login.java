@@ -33,7 +33,6 @@ import java.util.ArrayList;
 
 import superior.com.superior.database.DatabaseHandler;
 import superior.com.superior.database.Logins;
-import superior.com.superior.database.Routes;
 import superior.com.superior.utils.Utils;
 
 public class Login extends AppCompatActivity {
@@ -94,33 +93,58 @@ public class Login extends AppCompatActivity {
 
                 // Binds the Adapter to the ListView
                 //list.setAdapter(adapter);
+               login.setOnClickListener(new View.OnClickListener() {
+                   @Override
+                   public void onClick(View v) {
+                       DatabaseHandler db = new DatabaseHandler(getApplicationContext());
 
-                DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+//                       Log.d("count", String.valueOf(db.getAllLogins().size()));
+//
+//                       List<Logins> hhh = db.getAllLogins();
+//                       for (Logins l: hhh){
+//
+//                           Log.d("jhj",l.getPassword() +" and " + l.getUsername()
+//                                   +" and " + l.getEmail() +" and " + l.getLoc_code());
+//                       }
+                       Logins logins = db.getLogin(email_username.getText().toString(),password.getText().toString());
 
-                Logins logins = db.getLogin(email_username.getText().toString(),password.getText().toString());
+                       //Log.d("count", String.valueOf(db.getAllLogins().size()));
+                       if(logins != null){
+                           if(((email_username.getText().toString().equals(logins.getUsername())))
+                                   && db.MD5(password.getText().toString()).equals(logins.getPassword()) ){
 
-                if(((email_username.getText().toString() == logins.getEmail()))
-                        && password.getText().toString() == logins.getPassword() ){
+                               //STORE AUTHENTICATED USER DETAILS
+                               SharedPreferences sharedPreferences = getSharedPreferences("APP_DETAILS", Context.MODE_PRIVATE);
+                               SharedPreferences.Editor editor = sharedPreferences.edit();
+                               editor.putString("email", logins.getEmail());
+                               editor.putString("loc_code",logins.getLoc_code());
+                               editor.putString("username",logins.getUsername());
+                               editor.putString("grader_name",logins.getLocation());
+                               editor.apply();
 
-                    //STORE AUTHENTICATED USER DETAILS
-                    SharedPreferences sharedPreferences = getSharedPreferences("APP_DETAILS", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("email", logins.getEmail());
-                    editor.putString("loc_code",logins.getLoc_code());
-                    editor.putString("username",logins.getUsername());
-                    editor.putString("grader_name",logins.getLocation());
-                    editor.apply();
+                               Intent intent = new Intent(Login.this, MainActivity.class);
+                               password.setText("");
+                               email_username.setText("");
+                               startActivity(intent);
 
-                    Intent intent = new Intent(Login.this, MainActivity.class);
-                    password.setText("");
-                    email_username.setText("");
-                    startActivity(intent);
+                               finish();
 
-                    finish();
+                           }else {
+                               password.setError("Wrong password");
+                           }
+                       }else {
+                           password.setError("Wrong password");
 
-                }else {
-                    password.setError("Wrong password");
-                }
+                       }
+
+//                       Log.d("logins", String.valueOf(db.getAllLogins().size()));
+//
+//                       Log.d("logins",logins.getUsername() + " " + email_username.getText().toString() );
+//                       Log.d("logins",logins.getPassword() + " " + db.MD5(password.getText().toString()) );
+
+                   }
+               });
+
 
             }else {
                 login.setOnClickListener(new View.OnClickListener(){
@@ -209,8 +233,11 @@ public class Login extends AppCompatActivity {
                             protected Map<String, String> getParams()
                             {
                                 Map<String, String>  params = new HashMap<String, String>();
-                                params.put("email", email_username.getText().toString() );//email_username.getText().toString()
+                                params.put("email", email_username.getText().toString());//email_username.getText().toString()
                                 params.put("password", password.getText().toString()); //password.getText().toString()
+
+//                                params.put("email", "alexmaina");//email_username.getText().toString()
+//                                params.put("password", "1234");
 
                                 return params;
                             }

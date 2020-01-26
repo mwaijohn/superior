@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        debug {
+            storeFile file('F:\\dijikey.jks')
+            keyAlias = 'key0'
+            keyPassword '1234567890'
+            storePassword '1234567890'
+        }
+    }
     compileSdkVersion 27
     defaultConfig {
         applicationId "superior.com.superior"

@@ -5,7 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,6 +77,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
 
         values.put(USERNAME,logins.username);
+        values.put(PASSWORD,logins.password);
         values.put(EMAIL,logins.email);
         values.put(LOCATION_NAME,logins.location);
         values.put(LOCATION_CODE,logins.loc_code);
@@ -106,6 +109,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
 
+        Log.d("Count",String.valueOf(cursor.getCount()));
+
         return loginsList;
     }
 
@@ -113,18 +118,43 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public Logins getLogin(String username, String password){
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.query(TABLE_LOGIN, new String[] {USERNAME,
-                        PASSWORD, EMAIL, LOCATION_NAME,LOCATION_CODE  }, PASSWORD + "= ? AND " + USERNAME + " = ?" ,
-                new String[] { password, username }, null, null, null, null);
-        if (cursor != null)
+        String sql = "SELECT * FROM " + TABLE_LOGIN + " WHERE " + PASSWORD +" = ?" +" AND "
+                + USERNAME + " = ?" ;
+
+//        Cursor cursor = db.query(TABLE_LOGIN, new String[] {USERNAME,
+//                        PASSWORD, EMAIL, LOCATION_NAME,LOCATION_CODE  }, PASSWORD + "= ? AND " + USERNAME + " = ?" ,
+//                new String[] { password, username }, null, null, null, null);
+
+        Cursor cursor = db.rawQuery(sql,new String[]{MD5(password),username});
+
+        if (cursor != null && cursor.getCount()>0) { //81dc9bdb52d04dc20036dbd8313ed055  //81dc9bdb52d04dc20036dbd8313ed055
             cursor.moveToFirst();
-        else
+
+            Logins logins = new Logins(cursor.getString(1), cursor.getString(2), cursor.getString(3),
+                    cursor.getString(4), cursor.getString(5));
+            return logins;
+        }else
             return null;
+//        Log.d("Counts",String.valueOf(cursor.getCount()));
+//        Log.d("count",cursor.getString(1)); //username
+//        Log.d("count",cursor.getString(2)); //
 
-        Logins logins = new Logins(cursor.getString(1),cursor.getString(2),cursor.getString(3),
-                cursor.getString(4),cursor.getString(5));
+    }
 
-        return logins;
+    public String MD5(String md5) {
+        try {
+            java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+            byte[] array = md.digest(md5.getBytes("UTF-8"));
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < array.length; ++i) {
+                sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1,3));
+            }
+            return sb.toString();
+        } catch (java.security.NoSuchAlgorithmException e) {
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 
