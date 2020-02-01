@@ -66,6 +66,8 @@ public class FilterFarmerActivity  extends AppCompatActivity implements SearchVi
                 SharedPreferences sharedPreferences = getSharedPreferences("APP_DETAILS", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString("supplier_id",jhj.getSupplier_id());
+               // editor.putString("member_no",jhj.getSupplier_id());
+
                 editor.putString("farmer_contact",jhj.getContact());
                 editor.putString("supp_name",jhj.getSupplier_name());
                 editor.commit();
@@ -116,7 +118,7 @@ public class FilterFarmerActivity  extends AppCompatActivity implements SearchVi
                             for(int i=0;i<jsonArray.length();i++){
                                 JSONObject json = jsonArray.getJSONObject(i);
 
-                                String id = json.getString("supplier_id");
+                                String id = json.getString("member_no");
                                 String name = json.getString("supp_name");
                                 String contact = json.getString("contact");
                                 suppliers.add(name);

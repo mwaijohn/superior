@@ -287,8 +287,14 @@ public class MainActivity extends BaseActivity {
                 if(supp_id.getText().toString().equals("") ){
                     supp_id.setError("Enter farmer number");
                     Toast.makeText(MainActivity.this,"Enter farmer number",Toast.LENGTH_LONG).show();
+                }else if(spinner.getSelectedItem().toString().equals("-")){
+
+                    Toast.makeText(MainActivity.this, "Select a valid route", Toast.LENGTH_SHORT).show();
+
                 }else if(btnweight.getText().toString().equals("weight")){
+
                     Toast.makeText(MainActivity.this,"Make sure to record a valid weight",Toast.LENGTH_LONG).show();
+                    //Toast.makeText(MainActivity.this, spinner.getSelectedItem().toString(), Toast.LENGTH_SHORT).show();
 
                 }else{
                     try {
@@ -303,9 +309,9 @@ public class MainActivity extends BaseActivity {
                         if(weight<=0){
                             Toast.makeText(MainActivity.this,"Make sure to record a valid weight",Toast.LENGTH_LONG).show();
                         }else {
-                            saveData();
-                            supp_id.setText("");
-                            btnweight.setText("weight");
+                            //saveData();
+                           // supp_id.setText("");
+                           // btnweight.setText("weight");
                         }
                     }catch (Exception e){
                         Toast.makeText(MainActivity.this,"Make sure to record a valid weight",Toast.LENGTH_LONG).show();
@@ -1051,7 +1057,7 @@ public class MainActivity extends BaseActivity {
         String supp_id_ = details.getString("supplier_id",null);
 
         confirmname.setText(supp_name);
-        supp_id.setText(supp_id_);
+        supp_id.setText("Member No. : "+supp_id_);
 
         //Log.d("jhjh",supp_id_);
     }

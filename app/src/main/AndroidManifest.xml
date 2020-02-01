@@ -47,7 +47,8 @@
         </receiver>
 
         <activity android:name=".Print" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:theme="@style/Theme.AppCompat">
 
         </activity>
     </application>

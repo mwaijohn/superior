@@ -143,7 +143,8 @@
         android:layout_height="wrap_content"
         android:text="Name of Supplier"
         android:textColor="@color/black"
-        android:textAllCaps="true"
+        android:textAllCaps="false"
+        android:textStyle="bold"
         android:padding="15dp"/>
 
     <LinearLayout
@@ -157,23 +158,28 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="weigh"
-                android:visibility="visible"
-                android:textAllCaps="false"
-                android:id="@+id/weigh" />
 
             <Button
+                android:id="@+id/weigh"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="weight"
-                android:visibility="visible"
+                android:background="#E0F7FA"
+                android:text="weigh"
                 android:textAllCaps="false"
+                android:textColor="@color/black"
+                android:visibility="visible" />
+
+            <Button
                 android:id="@+id/button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
-                android:layout_alignParentEnd="true" />
+                android:layout_alignParentEnd="true"
+                android:background="#E0F7FA"
+                android:text="weight"
+                android:textAllCaps="false"
+                android:textColor="@color/black"
+                android:visibility="visible" />
         </RelativeLayout>
     </LinearLayout>
     <LinearLayout
@@ -207,15 +213,17 @@
     </LinearLayout>
 
     <Button
-        android:layout_below="@id/row6"
-        android:layout_width="match_parent"
-        android:padding="10dp"
-        android:layout_height="wrap_content"
-        android:text="Save"
         android:id="@+id/save"
-        android:textAllCaps="false"
-        android:background="@drawable/button_bg"
-        android:layout_margin="10dp"
-        />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/row6"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="#239b3a"
+        android:padding="10dp"
+        android:text="Save"
+        android:textAllCaps="false" />
 
 </RelativeLayout>
