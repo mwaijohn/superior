@@ -42,7 +42,7 @@ public class Login extends AppCompatActivity {
     RequestQueue mQueue;
     ProgressDialog progressDialog;
     ArrayList<String> myroutes ;
-    boolean hasInternet = false;
+    boolean hasInternet = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,11 +75,7 @@ public class Login extends AppCompatActivity {
         protected Void doInBackground(Void... voids) {
 
             hasInternet = Utils.hasInternetAccess(getApplicationContext());
-            if(hasInternet){
-                DatabaseHandler db = new DatabaseHandler(getApplicationContext());
-            }else{
-
-            }
+            hasInternet = Utils.Ping();
             return null;
         }
 
@@ -88,6 +84,7 @@ public class Login extends AppCompatActivity {
             super.onPostExecute(aVoid);
 
             if(hasInternet == false){
+                Toast.makeText(Login.this, "No internet connection", Toast.LENGTH_SHORT).show();
                 // Pass results to ListViewAdapter Class
                 //adapter = new ListViewAdapter(FilterFarmerActivity.this, arraylist);
 
@@ -100,12 +97,12 @@ public class Login extends AppCompatActivity {
 
 //                       Log.d("count", String.valueOf(db.getAllLogins().size()));
 //
-//                       List<Logins> hhh = db.getAllLogins();
-//                       for (Logins l: hhh){
-//
-//                           Log.d("jhj",l.getPassword() +" and " + l.getUsername()
-//                                   +" and " + l.getEmail() +" and " + l.getLoc_code());
-//                       }
+                       List<Logins> hhh = db.getAllLogins();
+                       for (Logins l: hhh){
+
+                           Log.d("jhj",l.getPassword() +" and " + l.getUsername()
+                                   +" and " + l.getEmail() +" and " + l.getLoc_code());
+                       }
                        Logins logins = db.getLogin(email_username.getText().toString(),password.getText().toString());
 
                        //Log.d("count", String.valueOf(db.getAllLogins().size()));
@@ -122,6 +119,8 @@ public class Login extends AppCompatActivity {
                                editor.putString("grader_name",logins.getLocation());
                                editor.apply();
 
+                               Log.d("password",logins.getPassword() + " " + db.MD5(password.getText().toString()) );
+
                                Intent intent = new Intent(Login.this, MainActivity.class);
                                password.setText("");
                                email_username.setText("");
@@ -130,10 +129,10 @@ public class Login extends AppCompatActivity {
                                finish();
 
                            }else {
-                               password.setError("Wrong password");
+                               password.setError("Wrong password!");
                            }
                        }else {
-                           password.setError("Wrong password");
+                           password.setError("Wrong password!!");
 
                        }
 
@@ -147,6 +146,7 @@ public class Login extends AppCompatActivity {
 
 
             }else {
+                //Toast.makeText(Login.this, "INTERNET IKO", Toast.LENGTH_SHORT).show();
                 login.setOnClickListener(new View.OnClickListener(){
                     @Override
                     public void onClick(View v){
@@ -224,7 +224,7 @@ public class Login extends AppCompatActivity {
                                     public void onErrorResponse(VolleyError error) {
                                         // error
                                         progressDialog.dismiss();
-                                        Log.d("Error.Response","request error");
+                                        Log.d("Error.Response",error.getLocalizedMessage());
                                         Toast.makeText(Login.this,error.toString(),Toast.LENGTH_LONG).show();
                                     }
                                 }
@@ -233,11 +233,11 @@ public class Login extends AppCompatActivity {
                             protected Map<String, String> getParams()
                             {
                                 Map<String, String>  params = new HashMap<String, String>();
-                                params.put("email", email_username.getText().toString());//email_username.getText().toString()
-                                params.put("password", password.getText().toString()); //password.getText().toString()
+//                                params.put("email", email_username.getText().toString());//email_username.getText().toString()
+//                                params.put("password", password.getText().toString()); //password.getText().toString()
 
-//                                params.put("email", "alexmaina");//email_username.getText().toString()
-//                                params.put("password", "1234");
+                                params.put("email", "alexmaina");//email_username.getText().toString()
+                                params.put("password", "1234");
 
                                 return params;
                             }

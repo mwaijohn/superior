@@ -2,8 +2,6 @@ package superior.com.superior.utils;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.util.Log;
 
@@ -12,6 +10,33 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class Utils {
+
+    public static boolean Ping(){
+
+        Runtime runtime = Runtime.getRuntime();
+        try
+        {
+            Process  mIpAddrProcess = runtime.exec("/system/bin/ping -c 1 " + "www.google.com");
+            int mExitValue = mIpAddrProcess.waitFor();
+            System.out.println(" mExitValue "+mExitValue);
+            if(mExitValue==0){
+                return true;
+            }else{
+                return false;
+            }
+        }
+        catch (InterruptedException ignore)
+        {
+            ignore.printStackTrace();
+            System.out.println(" Exception:"+ignore);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            System.out.println(" Exception:"+e);
+        }
+        return false;
+    }
 
     public static boolean hasInternetAccess(Context context) {
         if (isNetworkAvailable(context)) {
@@ -33,6 +58,8 @@ public class Utils {
         }
         return false;
     }
+
+
 
     public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager

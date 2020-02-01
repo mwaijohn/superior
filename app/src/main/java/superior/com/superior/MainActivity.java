@@ -85,8 +85,9 @@ public class MainActivity extends BaseActivity {
     BluetoothSocket mySocket = null;
     BluetoothDevice myDevice = null;
 
-    TextView name,confirmname;
-    EditText supp_id;
+    TextView name;
+    EditText confirmname;
+    TextView supp_id;
     Button btnweight,confirm,save,weigh,report,print;
     byte[] buffer = new byte[1024];
     UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
@@ -98,14 +99,16 @@ public class MainActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.design);
 
 
         shift = (Spinner) findViewById(R.id.shift) ;
         name = (TextView) findViewById(R.id.name);
-        confirm = (Button) findViewById(R.id.confirm);
-        confirmname = (TextView)findViewById(R.id.confirmname);
-        supp_id = (EditText) findViewById(R.id.editText);
+        //confirm = (Button) findViewById(R.id.confirm);
+        confirmname = (EditText) findViewById(R.id.confirm);
+
+        supp_id = (TextView) findViewById(R.id.confirm_name);
+
         save = (Button) findViewById(R.id.save);
         weigh = (Button) findViewById(R.id.weigh);
         report = (Button) findViewById(R.id.sendreport);
@@ -138,14 +141,14 @@ public class MainActivity extends BaseActivity {
 
         ArrayAdapter<String> spinnerAdaptershift = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_spinner_item,
                 myshifts);
-        spinnerAdaptershift.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+       spinnerAdaptershift.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+       spinnerAdaptershift.setDropDownViewResource(R.layout.spinner_item);
         shift.setAdapter(spinnerAdaptershift);
 
         shift.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String user_shift = parent.getItemAtPosition(position).toString();
-
                 //STORE selected shift default is selected of no action
                 SharedPreferences sharedPreferences = getSharedPreferences("APP_DETAILS", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -244,7 +247,7 @@ public class MainActivity extends BaseActivity {
 //            e.printStackTrace();
 //        }
 
-        confirm.setOnClickListener(new View.OnClickListener() {
+        confirmname.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 confirmName();
@@ -1059,15 +1062,16 @@ public class MainActivity extends BaseActivity {
         @Override
         protected Void doInBackground(Void... voids) {
 
-            hasInternet = Utils.hasInternetAccess(getApplicationContext());
+           // hasInternet = Utils.hasInternetAccess(getApplicationContext());
+            hasInternet = Utils.Ping();
+
             if(hasInternet){
                 DatabaseHandler db = new DatabaseHandler(getApplicationContext());
                 for (String rt : myroutes){
                     db.addRoutes(new Routes(rt));
                     Log.d("rtts",rt);
                 }
-
-
+                storeLogins();
             }else{
 
 
@@ -1108,7 +1112,7 @@ public class MainActivity extends BaseActivity {
                 spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spinner.setAdapter(spinnerAdapter);
             }else {
-                storeLogins();
+
             }
         }
 

@@ -37,7 +37,6 @@
                 android:id="@+id/shift"
                 android:layout_centerVertical="true"
                 android:layout_alignParentEnd="true" />
-
         </RelativeLayout>
 
     </LinearLayout>
