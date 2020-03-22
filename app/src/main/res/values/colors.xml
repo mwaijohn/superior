@@ -10,4 +10,5 @@
     <color name="grey">#68494747</color>
     <color name="black">#FF101011</color>
     <color name="green">#22e742</color>
+    <color name="btn_color">#E0F7FA</color>
 </resources>

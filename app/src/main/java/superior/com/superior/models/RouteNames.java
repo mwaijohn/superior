@@ -1,10 +1,10 @@
-package superior.com.superior.database;
+package superior.com.superior.models;
 
-public class Routes {
+public class RouteNames {
     String name;
 
-    public Routes(){}
-    public Routes(String name) {
+    public RouteNames(){}
+    public RouteNames(String name) {
         this.name = name;
     }
 

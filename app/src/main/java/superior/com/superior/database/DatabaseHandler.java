@@ -66,6 +66,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // Drop older table if existed
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ROUTES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SUPPLIERS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_LOGIN);
 
         // Create tables again
         onCreate(db);
@@ -74,6 +75,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     //add logins
     public void addLogins(Logins logins){
         SQLiteDatabase db = this.getWritableDatabase();
+        //db.execSQL("DROP TABLE IF EXISTS " + TABLE_LOGIN);
+
         ContentValues values = new ContentValues();
 
         values.put(USERNAME,logins.username);
@@ -121,9 +124,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String sql = "SELECT * FROM " + TABLE_LOGIN + " WHERE " + PASSWORD +" = ?" +" AND "
                 + USERNAME + " = ?" ;
 
-//        Cursor cursor = db.query(TABLE_LOGIN, new String[] {USERNAME,
-//                        PASSWORD, EMAIL, LOCATION_NAME,LOCATION_CODE  }, PASSWORD + "= ? AND " + USERNAME + " = ?" ,
-//                new String[] { password, username }, null, null, null, null);
 
         Cursor cursor = db.rawQuery(sql,new String[]{MD5(password),username});
 
@@ -161,6 +161,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     //add routes
     public void addRoutes(Routes routes){
         SQLiteDatabase db = this.getWritableDatabase();
+        //db.execSQL("DROP TABLE IF EXISTS " + TABLE_ROUTES);
+
         ContentValues values = new ContentValues();
 
         values.put(ROUTE,routes.name);
@@ -193,6 +195,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // code to add the new contact
     public void addSupplier(Suppliers supplier) {
         SQLiteDatabase db = this.getWritableDatabase();
+        //db.execSQL("DROP TABLE IF EXISTS " + TABLE_SUPPLIERS);
+
 
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, supplier.supp_name);

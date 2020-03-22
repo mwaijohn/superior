@@ -6,28 +6,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import superior.com.superior.R;
-import superior.com.superior.models.FarmerNames;
+import superior.com.superior.models.RouteNames;
 
-public class ListViewAdapter extends BaseAdapter {
-
-    // Declare Variables
+public class RoutesAdapter extends BaseAdapter {
 
     Context mContext;
     LayoutInflater inflater;
-    private List<FarmerNames> farmerList = null;
-    private ArrayList<FarmerNames> arraylist;
+    private List<RouteNames> routeList = null;
+    private ArrayList<RouteNames> arraylist;
 
-    public ListViewAdapter(Context context, List<FarmerNames> animalNamesList) {
+    public RoutesAdapter(Context context, List<RouteNames> routesList) {
         mContext = context;
-        this.farmerList = animalNamesList;
+        this.routeList = routesList;
         inflater = LayoutInflater.from(mContext);
-        this.arraylist = new ArrayList<FarmerNames>();
-        this.arraylist.addAll(animalNamesList);
+        this.arraylist = new ArrayList<RouteNames>();
+        this.arraylist.addAll(routesList);
     }
 
     public class ViewHolder {
@@ -36,12 +35,12 @@ public class ListViewAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return farmerList.size();
+        return routeList.size();
     }
 
     @Override
-    public FarmerNames getItem(int position) {
-        return farmerList.get(position);
+    public RouteNames getItem(int position) {
+        return routeList.get(position);
     }
 
     @Override
@@ -49,8 +48,9 @@ public class ListViewAdapter extends BaseAdapter {
         return position;
     }
 
-    public View getView(final int position, View view, ViewGroup parent) {
-        final ViewHolder holder;
+    @Override
+    public View getView(int position, View view, ViewGroup parent) {
+        final RoutesAdapter.ViewHolder holder;
         if (view == null) {
             holder = new ViewHolder();
             view = inflater.inflate(R.layout.list_view_items, null);
@@ -58,28 +58,28 @@ public class ListViewAdapter extends BaseAdapter {
             holder.name = (TextView) view.findViewById(R.id.name);
             view.setTag(holder);
         } else {
-            holder = (ViewHolder) view.getTag();
+            holder = (RoutesAdapter.ViewHolder) view.getTag();
         }
         // Set the results into TextViews
-        holder.name.setText(farmerList.get(position).getSupplier_name());
+        holder.name.setText(routeList.get(position).getName());
         return view;
     }
 
-
     // Filter Class
     public void filter(String charText) {
-        charText = charText.toLowerCase(Locale.getDefault());
-        farmerList.clear();
+        charText = charText.toUpperCase(Locale.getDefault());
+        routeList.clear();
         if (charText.length() == 0) {
-            farmerList.addAll(arraylist);
+            routeList.addAll(arraylist);
         } else {
-            for (FarmerNames wp : arraylist) {
-                if (wp.getSupplier_name().toLowerCase(Locale.getDefault()).contains(charText) ||
-                        wp.getSupplier_id().toLowerCase(Locale.getDefault()).contains(charText) ) {
-                    farmerList.add(wp);
+            for (RouteNames wp : arraylist) {
+                if (wp.getName().toUpperCase(Locale.getDefault()).contains(charText)  ) {
+                    routeList.add(wp);
                 }
             }
         }
         notifyDataSetChanged();
     }
+
+
 }

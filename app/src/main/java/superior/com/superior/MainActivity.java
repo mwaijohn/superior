@@ -85,6 +85,7 @@ public class MainActivity extends BaseActivity {
     BluetoothSocket mySocket = null;
     BluetoothDevice myDevice = null;
 
+    EditText search_route;
     TextView name;
     EditText confirmname;
     TextView supp_id;
@@ -101,6 +102,8 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.design);
 
+
+        search_route = findViewById(R.id.route);
 
         shift = (Spinner) findViewById(R.id.shift) ;
         name = (TextView) findViewById(R.id.name);
@@ -139,10 +142,11 @@ public class MainActivity extends BaseActivity {
             myshifts = new String[]{"MORNING","EVENING"};
         }
 
-        ArrayAdapter<String> spinnerAdaptershift = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_spinner_item,
+        //android.R.layout.simple_spinner_item
+        ArrayAdapter<String> spinnerAdaptershift = new ArrayAdapter<String>(MainActivity.this,R.layout.spinner_item,
                 myshifts);
        spinnerAdaptershift.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-       spinnerAdaptershift.setDropDownViewResource(R.layout.spinner_item);
+       //spinnerAdaptershift.setDropDownViewResource(R.layout.spinner_item);
         shift.setAdapter(spinnerAdaptershift);
 
         shift.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -165,7 +169,7 @@ public class MainActivity extends BaseActivity {
         });
         btnweight = (Button) findViewById(R.id.button) ;
         //textView.setText("Hello Kenya");
-        spinner = (Spinner) findViewById(R.id.spinner2);
+        //spinner = (Spinner) findViewById(R.id.spinner2);
         btnweight.setText("weight");
 
         mQueue = Volley.newRequestQueue(this);
@@ -261,25 +265,25 @@ public class MainActivity extends BaseActivity {
                 }
         });
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String route = parent.getItemAtPosition(position).toString();
-
-                //STORE selected route default is selected of no action
-                SharedPreferences sharedPreferences = getSharedPreferences("APP_DETAILS", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("route_id",route);
-                editor.commit();
-
-                Toast.makeText(MainActivity.this,route,Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
+//        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                String route = parent.getItemAtPosition(position).toString();
+//
+//                //STORE selected route default is selected of no action
+//                SharedPreferences sharedPreferences = getSharedPreferences("APP_DETAILS", Context.MODE_PRIVATE);
+//                SharedPreferences.Editor editor = sharedPreferences.edit();
+//                editor.putString("route_id",route);
+//                editor.commit();
+//
+//                Toast.makeText(MainActivity.this,route,Toast.LENGTH_SHORT).show();
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//
+//            }
+//        });
 
         save.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -287,7 +291,7 @@ public class MainActivity extends BaseActivity {
                 if(supp_id.getText().toString().equals("") ){
                     supp_id.setError("Enter farmer number");
                     Toast.makeText(MainActivity.this,"Enter farmer number",Toast.LENGTH_LONG).show();
-                }else if(spinner.getSelectedItem().toString().equals("-")){
+                }else if(search_route.getText().toString().equals("-") || search_route.getText().toString().equals(null)){
 
                     Toast.makeText(MainActivity.this, "Select a valid route", Toast.LENGTH_SHORT).show();
 
@@ -309,9 +313,26 @@ public class MainActivity extends BaseActivity {
                         if(weight<=0){
                             Toast.makeText(MainActivity.this,"Make sure to record a valid weight",Toast.LENGTH_LONG).show();
                         }else {
-                            //saveData();
-                           // supp_id.setText("");
-                           // btnweight.setText("weight");
+                            saveData();
+                            //supp_id.setText("");
+
+                            SharedPreferences sharedPreferences = getSharedPreferences("APP_DETAILS", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            //editor.putString("supplier_id","");
+                            // editor.putString("member_no",jhj.getSupplier_id());
+
+                            editor.putString("supp_name","");
+                            //editor.putString("route_id","");
+                            editor.apply();
+
+                            //Log.d("")
+
+//                            btnweight.setText("weight");
+//                            supp_id.setText("");
+//                            supp_id.setVisibility(View.INVISIBLE);
+//                            //search_route.setText("");
+//                            //confirmname.setText("");
+//                            confirmname.setVisibility(View.INVISIBLE);
                         }
                     }catch (Exception e){
                         Toast.makeText(MainActivity.this,"Make sure to record a valid weight",Toast.LENGTH_LONG).show();
@@ -678,10 +699,11 @@ public class MainActivity extends BaseActivity {
                                 //Log.i("routes",route);
                             }
 
-                            ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_spinner_item,
-                                    myroutes.toArray(new String[myroutes.size()]));
-                            spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                            spinner.setAdapter(spinnerAdapter);
+//                            ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_spinner_item,
+//                                    myroutes.toArray(new String[myroutes.size()]));
+//                            spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//                            spinner.setAdapter(spinnerAdapter);
+
                             Log.i("routes",String.valueOf(jsonArray.length()));
                             Log.i("nice",String.valueOf(myroutes.size()));
                             new Internet().execute();
@@ -712,63 +734,6 @@ public class MainActivity extends BaseActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         //startActivityForResult(,1);
         startActivityForResult(intent, 1);
-
-        //startActivity(intent);
-
-//        String url = "http://dairy.digerp.com/milkfarming/farmers/confirm_name.php?id="+supp_id.getText().toString();
-//
-//        StringRequest getRequest = new StringRequest(Request.Method.GET,url,new Response.Listener<String>(){
-//            @Override
-//            public void onResponse(String response) {
-//
-//                try {
-//                    JSONObject jsonObj = new JSONObject(response.toString());
-//                    JSONArray jsonArray = jsonObj.getJSONArray("details");
-//
-//                    JSONObject json = jsonArray.getJSONObject(0);
-//                    String supp_name = json.getString("supp_name");
-//                    String supp_id = json.getString("supplier_id");
-//                    String contact = json.getString("contact");
-//
-//                    if(supp_name.equals("null")){
-//                        confirmname.setError("Ivalid member number");
-//                    }
-//
-//                    //STORE supplier id and contact
-//                    SharedPreferences sharedPreferences = getSharedPreferences("APP_DETAILS", Context.MODE_PRIVATE);
-//                    SharedPreferences.Editor editor = sharedPreferences.edit();
-//                    editor.putString("supplier_id",supp_id);
-//                    editor.putString("farmer_contact",contact);
-//                    editor.putString("supp_name",supp_name);
-//
-//                    editor.commit();
-//
-//
-//
-//                    confirmname.setText(supp_name);
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                    supp_id.setText("");
-//                    supp_id.setError("Farmer does not exist");
-//                    confirmname.setText("");
-//                }
-//                Log.i("confirm",response);
-//            }
-//        },new Response.ErrorListener(){
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//
-//            }
-//       });//{
-//            @Override
-//            protected Map<String, String> getParams() throws AuthFailureError {
-//                Map<String, String>  params = new HashMap<String, String>();
-//                params.put("id", supp_id.getText().toString());
-//                return params;
-//            }
-        //};
-
-       // mQueue.add(getRequest);
     }
 
     public void saveData(){
@@ -780,6 +745,13 @@ public class MainActivity extends BaseActivity {
                     public void onResponse(String response) {
                         Log.i("update_succes",response.toString());
                         Toast.makeText(MainActivity.this, "Data Saved Successfully", Toast.LENGTH_SHORT).show();
+
+                        btnweight.setText("weight");
+                        supp_id.setText("");
+                        //supp_id.setVisibility(View.INVISIBLE);
+                        //search_route.setText("");
+                        confirmname.setText("");
+                        //confirmname.setVisibility(View.INVISIBLE);
                     }
                 },new Response.ErrorListener(){
             //on error log this data to a file
@@ -820,9 +792,9 @@ public class MainActivity extends BaseActivity {
                     Log.i("backup","Log back up file created and written successfully");
                     Toast.makeText(MainActivity.this,"Data saved successfully",Toast.LENGTH_LONG).show();
 
-                   // sendMassage();
+                   sendMassage();
 
-                    //genPDFReport();
+                   genPDFReport();
                 }
                 catch(IOException e)
                 {
@@ -854,11 +826,15 @@ public class MainActivity extends BaseActivity {
                 params.put("ord_date",ord_date);
                 params.put("username",grader_username);
 
+                //Log.d("params",route_id +" " + "supp_id " + supplier_id);
+
                 return params;
             }
 
         };
         mQueue.add(update);
+        Log.d("params_"," " + "supp_id " + supplier_id);
+
     }
 
     public void sendMassage(){
@@ -1032,6 +1008,8 @@ public class MainActivity extends BaseActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("supplier_id",null);
         editor.putString("supp_name",null);
+        editor.putString("route_id",null);
+       // editor.putString("route_id","-");
         editor.commit();
     }
     //remember the scale
@@ -1056,8 +1034,12 @@ public class MainActivity extends BaseActivity {
 
         String supp_id_ = details.getString("supplier_id",null);
 
+        String route = details.getString("route_id",null);
+
+        search_route.setText(route);
         confirmname.setText(supp_name);
-        supp_id.setText("Member No. : "+supp_id_);
+        String mem_no = supp_id_ == null ? "" : supp_id_;
+        supp_id.setText("Member No. : "+ mem_no);
 
         //Log.d("jhjh",supp_id_);
     }
@@ -1092,35 +1074,10 @@ public class MainActivity extends BaseActivity {
 
                 Log.d("routes_s",String.valueOf(myroutes.size()));
 
-//                // Pass results to ListViewAdapter Class
-//                adapter = new ListViewAdapter(FilterFarmerActivity.this, arraylist);
-//
-//                // Binds the Adapter to the ListView
-//                list.setAdapter(adapter);
-
             }
             return null;
         }
 
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-
-            if(!hasInternet){
-                // Pass results to ListViewAdapter Class
-                //adapter = new ListViewAdapter(FilterFarmerActivity.this, arraylist);
-
-                // Binds the Adapter to the ListView
-                //list.setAdapter(adapter);
-
-                ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_spinner_item,
-                        myroutes.toArray(new String[myroutes.size()]));
-                spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spinner.setAdapter(spinnerAdapter);
-            }else {
-
-            }
-        }
 
         @Override
         protected void onProgressUpdate(Void... values) {
@@ -1136,5 +1093,25 @@ public class MainActivity extends BaseActivity {
         protected void onCancelled() {
             super.onCancelled();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        SharedPreferences sharedPreferences = getSharedPreferences("APP_DETAILS", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("supplier_id","");
+        // editor.putString("member_no",jhj.getSupplier_id());
+
+        editor.putString("supp_name","");
+        editor.putString("route_id","");
+        editor.apply();
+        search_route.setText("");
+        confirmname.setText("");
+    }
+
+    public void LaunchRouteView(View view){
+        startActivity(new Intent(this,FilterRoute.class));
     }
 }

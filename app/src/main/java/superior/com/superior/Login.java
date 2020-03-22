@@ -233,11 +233,11 @@ public class Login extends AppCompatActivity {
                             protected Map<String, String> getParams()
                             {
                                 Map<String, String>  params = new HashMap<String, String>();
-//                                params.put("email", email_username.getText().toString());//email_username.getText().toString()
-//                                params.put("password", password.getText().toString()); //password.getText().toString()
+                                params.put("email", email_username.getText().toString());//email_username.getText().toString()
+                                params.put("password", password.getText().toString()); //password.getText().toString()
 
-                                params.put("email", "alexmaina");//email_username.getText().toString()
-                                params.put("password", "1234");
+                               // params.put("email", "alexmaina");//email_username.getText().toString()
+                                //params.put("password", "1234");
 
                                 return params;
                             }

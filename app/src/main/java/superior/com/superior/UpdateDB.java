@@ -92,7 +92,7 @@ public class UpdateDB extends Service {
 //                    linecount++;
 //                }
                 //String supplier_id,route_id,shift,total,ord_date;
-                String url = "http://192.168.137.1/milkfarming/farmers/get_farmer_id.php";
+                String url = "http://dairy.digerp.com/milkfarming/farmers/get_farmer_id.php";
                 String read_line;
                 while ((read_line= reader.readLine())!= null){
                      final String [] data = read_line.split(" ");
@@ -148,7 +148,7 @@ public class UpdateDB extends Service {
     public void saveData( final String route_id,final String supplier_id , final String shift,
                           final String ord_date,final String username,final String total){
         RequestQueue mQueue = Volley.newRequestQueue(this);
-        String url = "http://192.168.137.1/milkfarming/farmers/insert.php";
+        String url = "http://dairy.digerp.com/milkfarming/farmers/insert.php";
         StringRequest update = new StringRequest(Request.Method.POST,url,
                 new Response.Listener<String>(){
                     @Override
